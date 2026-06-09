@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local lp = Players.LocalPlayer
+local mouse = lp:GetMouse()
 
 getgenv().Cfg = getgenv().Cfg or {
     ws = 16,
@@ -20,29 +21,28 @@ getgenv().Cfg = getgenv().Cfg or {
     flyspeed = 50,
     antivoid = false,
     fling = false,
-    color = Color3.fromRGB(0, 170, 255)
+    color = Color3.fromRGB(0,170,255)
 }
 
 local colors = {
-    {"Blue", Color3.fromRGB(0,170,255)},
-    {"Red", Color3.fromRGB(255,0,0)},
-    {"Green", Color3.fromRGB(0,255,0)},
-    {"Yellow", Color3.fromRGB(255,255,0)},
-    {"Purple", Color3.fromRGB(170,0,255)},
-    {"Pink", Color3.fromRGB(255,0,170)},
-    {"Orange", Color3.fromRGB(255,130,0)},
-    {"Cyan", Color3.fromRGB(0,255,255)},
-    {"White", Color3.fromRGB(255,255,255)},
-    {"Lime", Color3.fromRGB(130,255,0)}
+    {"Blue",Color3.fromRGB(0,170,255)},
+    {"Red",Color3.fromRGB(255,0,0)},
+    {"Green",Color3.fromRGB(0,255,0)},
+    {"Yellow",Color3.fromRGB(255,255,0)},
+    {"Purple",Color3.fromRGB(170,0,255)},
+    {"Pink",Color3.fromRGB(255,0,170)},
+    {"Orange",Color3.fromRGB(255,130,0)},
+    {"Cyan",Color3.fromRGB(0,255,255)},
+    {"White",Color3.fromRGB(255,255,255)},
+    {"Lime",Color3.fromRGB(130,255,0)}
 }
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "DeltaUI"
 gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = game:GetService("CoreGui")
 
-local mini = Instance.new("TextButton", gui)
+local mini = Instance.new("TextButton",gui)
 mini.Size = UDim2.new(0,55,0,55)
 mini.Position = UDim2.new(0,20,0,300)
 mini.BackgroundColor3 = Color3.fromRGB(110,0,255)
@@ -52,10 +52,10 @@ mini.TextSize = 24
 mini.Font = Enum.Font.GothamBold
 mini.Active = true
 mini.Draggable = true
-Instance.new("UICorner", mini).CornerRadius = UDim.new(1,0)
-Instance.new("UIStroke", mini).Thickness = 2
+Instance.new("UICorner",mini).CornerRadius = UDim.new(1,0)
+Instance.new("UIStroke",mini).Thickness = 2
 
-local main = Instance.new("Frame", gui)
+local main = Instance.new("Frame",gui)
 main.Size = UDim2.new(0,320,0,540)
 main.Position = UDim2.new(0.5,-160,0.5,-270)
 main.BackgroundColor3 = Color3.fromRGB(15,15,20)
@@ -63,26 +63,25 @@ main.Visible = false
 main.Active = true
 main.Draggable = true
 main.BorderSizePixel = 0
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
-Instance.new("UIStroke", main).Color = Color3.fromRGB(110,0,255)
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,14)
+Instance.new("UIStroke",main).Color = Color3.fromRGB(110,0,255)
 
-local top = Instance.new("Frame", main)
+local top = Instance.new("Frame",main)
 top.Size = UDim2.new(1,0,0,45)
 top.BackgroundColor3 = Color3.fromRGB(20,20,28)
 top.BorderSizePixel = 0
-Instance.new("UICorner", top).CornerRadius = UDim.new(0,14)
+Instance.new("UICorner",top).CornerRadius = UDim.new(0,14)
 
-local ttl = Instance.new("TextLabel", top)
-ttl.Size = UDim2.new(0.7,0,1,0)
-ttl.Position = UDim2.new(0,15,0,0)
-ttl.BackgroundTransparency = 1
-ttl.Text = "DELTA PRO"
-ttl.TextColor3 = Color3.fromRGB(180,130,255)
-ttl.Font = Enum.Font.GothamBold
-ttl.TextSize = 18
-ttl.TextXAlignment = Enum.TextXAlignment.Left
+Instance.new("TextLabel",top).Size = UDim2.new(0.7,0,1,0)
+top.TextLabel.Position = UDim2.new(0,15,0,0)
+top.TextLabel.BackgroundTransparency = 1
+top.TextLabel.Text = "DELTA PRO"
+top.TextLabel.TextColor3 = Color3.fromRGB(180,130,255)
+top.TextLabel.Font = Enum.Font.GothamBold
+top.TextLabel.TextSize = 18
+top.TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local xb = Instance.new("TextButton", top)
+local xb = Instance.new("TextButton",top)
 xb.Size = UDim2.new(0,40,0,40)
 xb.Position = UDim2.new(1,-42,0,2)
 xb.BackgroundTransparency = 1
@@ -91,7 +90,7 @@ xb.TextColor3 = Color3.fromRGB(255,80,80)
 xb.Font = Enum.Font.GothamBold
 xb.TextSize = 20
 
-local sc = Instance.new("ScrollingFrame", main)
+local sc = Instance.new("ScrollingFrame",main)
 sc.Size = UDim2.new(1,-16,1,-60)
 sc.Position = UDim2.new(0,8,0,52)
 sc.BackgroundTransparency = 1
@@ -100,13 +99,13 @@ sc.ScrollBarImageColor3 = Color3.fromRGB(110,0,255)
 sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
 sc.CanvasSize = UDim2.new(0,0,0,0)
 sc.BorderSizePixel = 0
-Instance.new("UIListLayout", sc).Padding = UDim.new(0,6)
+Instance.new("UIListLayout",sc).Padding = UDim.new(0,6)
 
 local lo = 0
 local function nlo() lo=lo+1 return lo end
 
 local function sep(txt)
-    local s = Instance.new("TextLabel", sc)
+    local s = Instance.new("TextLabel",sc)
     s.Size = UDim2.new(1,0,0,28)
     s.BackgroundColor3 = Color3.fromRGB(25,20,35)
     s.Text = "  "..txt
@@ -116,17 +115,17 @@ local function sep(txt)
     s.TextXAlignment = Enum.TextXAlignment.Left
     s.BorderSizePixel = 0
     s.LayoutOrder = nlo()
-    Instance.new("UICorner", s).CornerRadius = UDim.new(0,8)
+    Instance.new("UICorner",s).CornerRadius = UDim.new(0,8)
 end
 
-local function inp(name, key, mi, ma)
-    local f = Instance.new("Frame", sc)
+local function inp(name,key,mi,ma)
+    local f = Instance.new("Frame",sc)
     f.Size = UDim2.new(1,0,0,58)
     f.BackgroundColor3 = Color3.fromRGB(25,25,32)
     f.BorderSizePixel = 0
     f.LayoutOrder = nlo()
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0,10)
-    local l = Instance.new("TextLabel", f)
+    Instance.new("UICorner",f).CornerRadius = UDim.new(0,10)
+    local l = Instance.new("TextLabel",f)
     l.Size = UDim2.new(0.55,0,0,24)
     l.Position = UDim2.new(0,10,0,4)
     l.BackgroundTransparency = 1
@@ -135,7 +134,7 @@ local function inp(name, key, mi, ma)
     l.Font = Enum.Font.GothamSemibold
     l.TextSize = 13
     l.TextXAlignment = Enum.TextXAlignment.Left
-    local v = Instance.new("TextLabel", f)
+    local v = Instance.new("TextLabel",f)
     v.Size = UDim2.new(0.4,0,0,24)
     v.Position = UDim2.new(0.55,0,0,4)
     v.BackgroundTransparency = 1
@@ -144,7 +143,7 @@ local function inp(name, key, mi, ma)
     v.Font = Enum.Font.GothamBold
     v.TextSize = 14
     v.TextXAlignment = Enum.TextXAlignment.Right
-    local bx = Instance.new("TextBox", f)
+    local bx = Instance.new("TextBox",f)
     bx.Size = UDim2.new(1,-20,0,26)
     bx.Position = UDim2.new(0,10,0,28)
     bx.BackgroundColor3 = Color3.fromRGB(12,12,18)
@@ -154,11 +153,11 @@ local function inp(name, key, mi, ma)
     bx.TextSize = 14
     bx.BorderSizePixel = 0
     bx.ClearTextOnFocus = true
-    Instance.new("UICorner", bx).CornerRadius = UDim.new(0,8)
+    Instance.new("UICorner",bx).CornerRadius = UDim.new(0,8)
     bx.FocusLost:Connect(function()
         local n = tonumber(bx.Text)
         if n then
-            n = math.clamp(math.floor(n), mi, ma)
+            n = math.clamp(math.floor(n),mi,ma)
             getgenv().Cfg[key] = n
             bx.Text = tostring(n)
             v.Text = tostring(n)
@@ -168,15 +167,15 @@ local function inp(name, key, mi, ma)
     end)
 end
 
-local function tog(name, key)
-    local b = Instance.new("TextButton", sc)
+local function tog(name,key)
+    local b = Instance.new("TextButton",sc)
     b.Size = UDim2.new(1,0,0,38)
     b.BorderSizePixel = 0
     b.Font = Enum.Font.GothamBold
     b.TextSize = 13
     b.TextColor3 = Color3.new(1,1,1)
     b.LayoutOrder = nlo()
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0,10)
+    Instance.new("UICorner",b).CornerRadius = UDim.new(0,10)
     local function upd()
         b.BackgroundColor3 = getgenv().Cfg[key] and Color3.fromRGB(0,160,80) or Color3.fromRGB(40,40,50)
         b.Text = name..(getgenv().Cfg[key] and " ON" or " OFF")
@@ -189,51 +188,51 @@ local function tog(name, key)
 end
 
 sep("CHARACTER")
-inp("WalkSpeed", "ws", 16, 500)
-inp("JumpPower", "jp", 50, 500)
-inp("FOV", "fov", 70, 200)
-inp("Fly Speed", "flyspeed", 1, 1000)
+inp("WalkSpeed","ws",16,500)
+inp("JumpPower","jp",50,500)
+inp("FOV","fov",70,200)
+inp("Fly Speed","flyspeed",1,1000)
 
 sep("TOGGLES")
-tog("Fly", "fly")
-tog("NoClip", "noclip")
-tog("Anti Void", "antivoid")
-tog("Touch Fling", "fling")
-tog("FPS Unlock 120", "fps")
-tog("Xray", "xray")
+tog("Fly","fly")
+tog("NoClip","noclip")
+tog("Anti Void","antivoid")
+tog("Touch Fling","fling")
+tog("FPS Unlock 120","fps")
+tog("Xray","xray")
 
 sep("ESP")
-tog("ESP Names+Dist", "esp")
-tog("Highlights", "high")
+tog("ESP Names+Dist","esp")
+tog("Highlights","high")
 
 sep("ESP COLOR")
-local cg = Instance.new("Frame", sc)
+local cg = Instance.new("Frame",sc)
 cg.Size = UDim2.new(1,0,0,95)
 cg.BackgroundTransparency = 1
 cg.LayoutOrder = nlo()
-local grd = Instance.new("UIGridLayout", cg)
+local grd = Instance.new("UIGridLayout",cg)
 grd.CellSize = UDim2.new(0,54,0,40)
 grd.CellPadding = UDim2.new(0,4,0,4)
 for _,v in ipairs(colors) do
-    local cb = Instance.new("TextButton", cg)
+    local cb = Instance.new("TextButton",cg)
     cb.BackgroundColor3 = v[2]
     cb.Text = v[1]
     cb.TextColor3 = Color3.new(1,1,1)
     cb.TextSize = 10
     cb.Font = Enum.Font.GothamBold
     cb.BorderSizePixel = 0
-    Instance.new("UICorner", cb).CornerRadius = UDim.new(0,8)
+    Instance.new("UICorner",cb).CornerRadius = UDim.new(0,8)
     cb.MouseButton1Click:Connect(function()
         getgenv().Cfg.color = v[2]
     end)
 end
 
 sep("CUSTOM RGB")
-local rgbf = Instance.new("Frame", sc)
+local rgbf = Instance.new("Frame",sc)
 rgbf.Size = UDim2.new(1,0,0,35)
 rgbf.BackgroundTransparency = 1
 rgbf.LayoutOrder = nlo()
-local rr = Instance.new("TextBox", rgbf)
+local rr = Instance.new("TextBox",rgbf)
 rr.Size = UDim2.new(0.3,-4,1,0)
 rr.BackgroundColor3 = Color3.fromRGB(40,15,15)
 rr.Text = "0"
@@ -242,30 +241,30 @@ rr.TextColor3 = Color3.fromRGB(255,100,100)
 rr.Font = Enum.Font.Gotham
 rr.TextSize = 14
 rr.BorderSizePixel = 0
-Instance.new("UICorner", rr)
-local gg = Instance.new("TextBox", rgbf)
-gg.Size = UDim2.new(0.3,-4,1,0)
-gg.Position = UDim2.new(0.35,0,0,0)
-gg.BackgroundColor3 = Color3.fromRGB(15,40,15)
-gg.Text = "170"
-gg.PlaceholderText = "G"
-gg.TextColor3 = Color3.fromRGB(100,255,100)
-gg.Font = Enum.Font.Gotham
-gg.TextSize = 14
-gg.BorderSizePixel = 0
-Instance.new("UICorner", gg)
-local bbb = Instance.new("TextBox", rgbf)
-bbb.Size = UDim2.new(0.3,-4,1,0)
-bbb.Position = UDim2.new(0.7,0,0,0)
-bbb.BackgroundColor3 = Color3.fromRGB(15,15,40)
-bbb.Text = "255"
-bbb.PlaceholderText = "B"
-bbb.TextColor3 = Color3.fromRGB(100,100,255)
-bbb.Font = Enum.Font.Gotham
-bbb.TextSize = 14
-bbb.BorderSizePixel = 0
-Instance.new("UICorner", bbb)
-local apb = Instance.new("TextButton", sc)
+Instance.new("UICorner",rr)
+local ggb = Instance.new("TextBox",rgbf)
+ggb.Size = UDim2.new(0.3,-4,1,0)
+ggb.Position = UDim2.new(0.35,0,0,0)
+ggb.BackgroundColor3 = Color3.fromRGB(15,40,15)
+ggb.Text = "170"
+ggb.PlaceholderText = "G"
+ggb.TextColor3 = Color3.fromRGB(100,255,100)
+ggb.Font = Enum.Font.Gotham
+ggb.TextSize = 14
+ggb.BorderSizePixel = 0
+Instance.new("UICorner",ggb)
+local bbn = Instance.new("TextBox",rgbf)
+bbn.Size = UDim2.new(0.3,-4,1,0)
+bbn.Position = UDim2.new(0.7,0,0,0)
+bbn.BackgroundColor3 = Color3.fromRGB(15,15,40)
+bbn.Text = "255"
+bbn.PlaceholderText = "B"
+bbn.TextColor3 = Color3.fromRGB(100,100,255)
+bbn.Font = Enum.Font.Gotham
+bbn.TextSize = 14
+bbn.BorderSizePixel = 0
+Instance.new("UICorner",bbn)
+local apb = Instance.new("TextButton",sc)
 apb.Size = UDim2.new(1,0,0,35)
 apb.BackgroundColor3 = Color3.fromRGB(70,0,140)
 apb.Text = "Apply RGB"
@@ -274,11 +273,11 @@ apb.Font = Enum.Font.GothamBold
 apb.TextSize = 14
 apb.BorderSizePixel = 0
 apb.LayoutOrder = nlo()
-Instance.new("UICorner", apb).CornerRadius = UDim.new(0,10)
+Instance.new("UICorner",apb).CornerRadius = UDim.new(0,10)
 apb.MouseButton1Click:Connect(function()
     local r = math.clamp(tonumber(rr.Text) or 0,0,255)
-    local g = math.clamp(tonumber(gg.Text) or 0,0,255)
-    local b = math.clamp(tonumber(bbb.Text) or 0,0,255)
+    local g = math.clamp(tonumber(ggb.Text) or 0,0,255)
+    local b = math.clamp(tonumber(bbn.Text) or 0,0,255)
     getgenv().Cfg.color = Color3.fromRGB(r,g,b)
 end)
 
@@ -291,86 +290,130 @@ xb.MouseButton1Click:Connect(function()
     mini.Visible = true
 end)
 
-local flying = false
-local flyPart = nil
-local flyAtt = nil
-local flyLV = nil
-local flyAV = nil
+local noclipping = false
+local noclipconn = nil
 
-local function startFly()
-    if flying then return end
+local flying = false
+local flyBody = {}
+
+local function sFly()
     local char = lp.Character
     if not char then return end
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then return end
+    if flying then return end
     flying = true
 
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.PlatformStand = true
-    end
+    local bg = Instance.new("BodyGyro")
+    bg.P = 9e4
+    bg.maxTorque = Vector3.new(9e9,9e9,9e9)
+    bg.cframe = hrp.CFrame
+    bg.Parent = hrp
 
-    flyAtt = Instance.new("Attachment")
-    flyAtt.Name = "FlyAtt"
-    flyAtt.Parent = hrp
+    local bv = Instance.new("BodyVelocity")
+    bv.velocity = Vector3.new(0,0.1,0)
+    bv.maxForce = Vector3.new(9e9,9e9,9e9)
+    bv.Parent = hrp
 
-    flyLV = Instance.new("LinearVelocity")
-    flyLV.Name = "FlyLV"
-    flyLV.Attachment0 = flyAtt
-    flyLV.MaxForce = 999999
-    flyLV.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
-    flyLV.VectorVelocity = Vector3.new(0,0,0)
-    flyLV.Parent = hrp
+    flyBody = {bg=bg,bv=bv}
 
-    flyAV = Instance.new("AlignOrientation")
-    flyAV.Name = "FlyAO"
-    flyAV.Attachment0 = flyAtt
-    flyAV.MaxTorque = 999999
-    flyAV.Responsiveness = 40
-    flyAV.Mode = Enum.OrientationAlignmentMode.OneAttachment
-    flyAV.CFrame = workspace.CurrentCamera.CFrame
-    flyAV.Parent = hrp
+    spawn(function()
+        repeat
+            local cam = workspace.CurrentCamera
+            local speed = getgenv().Cfg.flyspeed
+            local moveDir = Vector3.new(0,0,0)
+
+            if hum.MoveDirection.Magnitude > 0 then
+                moveDir = moveDir + (cam.CFrame.LookVector * hum.MoveDirection.Z) + (cam.CFrame.RightVector * hum.MoveDirection.X)
+            end
+
+            if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0,1,0) end
+            if UIS:IsKeyDown(Enum.KeyCode.LeftShift) or UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveDir = moveDir + Vector3.new(0,-1,0) end
+
+            if moveDir.Magnitude > 0 then
+                moveDir = moveDir.Unit
+            end
+
+            bv.velocity = moveDir * speed
+            bg.cframe = cam.CFrame
+            hum.PlatformStand = true
+
+            RunService.Heartbeat:Wait()
+        until not flying
+    end)
 end
 
-local function stopFly()
+local function eFly()
     if not flying then return end
     flying = false
     local char = lp.Character
     if char then
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            for _,c in ipairs(hrp:GetChildren()) do
-                if c.Name == "FlyAtt" or c.Name == "FlyLV" or c.Name == "FlyAO" then
-                    c:Destroy()
-                end
-            end
-        end
         local hum = char:FindFirstChildOfClass("Humanoid")
         if hum then hum.PlatformStand = false end
     end
-    flyAtt = nil
-    flyLV = nil
-    flyAV = nil
+    if flyBody.bg then flyBody.bg:Destroy() end
+    if flyBody.bv then flyBody.bv:Destroy() end
+    flyBody = {}
 end
 
-local flyUp = false
+local flingLoop = nil
+local flingActive = false
+local origWS = 16
+
+local function sFling()
+    if flingActive then return end
+    flingActive = true
+    local char = lp.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then return end
+    origWS = hum.WalkSpeed
+
+    flingLoop = RunService.Heartbeat:Connect(function()
+        if not getgenv().Cfg.fling then return end
+        local myChar = lp.Character
+        if not myChar then return end
+        local myHrp = myChar:FindFirstChild("HumanoidRootPart")
+        if not myHrp then return end
+
+        for _,plr in ipairs(Players:GetPlayers()) do
+            if plr ~= lp and plr.Character then
+                local tHrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                if tHrp then
+                    local dist = (myHrp.Position - tHrp.Position).Magnitude
+                    if dist < 10 then
+                        myHrp.CFrame = tHrp.CFrame
+                        myHrp.Velocity = myHrp.CFrame.LookVector * 350
+                        myHrp.RotVelocity = Vector3.new(math.random(-50,50),math.random(-50,50),math.random(-50,50))
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function eFling()
+    flingActive = false
+    if flingLoop then flingLoop:Disconnect() flingLoop = nil end
+    local char = lp.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Velocity = Vector3.new(0,0,0)
+            hrp.RotVelocity = Vector3.new(0,0,0)
+        end
+    end
+end
 
 UIS.JumpRequest:Connect(function()
-    if getgenv().Cfg.fly and flying then
-        flyUp = true
-    end
-end)
-
-UIS.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Space then
-        if getgenv().Cfg.fly then flyUp = true end
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.Space then
-        flyUp = false
+    if getgenv().Cfg.fly and flying and flyBody.bv then
+        flyBody.bv.velocity = flyBody.bv.velocity + Vector3.new(0,getgenv().Cfg.flyspeed,0)
     end
 end)
 
@@ -382,7 +425,7 @@ local function makeESP(plr)
     if plr == lp then return end
     local function setup(char)
         if not char then return end
-        local hrp = char:WaitForChild("HumanoidRootPart", 10)
+        local hrp = char:WaitForChild("HumanoidRootPart",10)
         if not hrp then return end
         for _,old in ipairs(char:GetChildren()) do
             if old.Name == "DHL" or old.Name == "DBB" then old:Destroy() end
@@ -401,7 +444,7 @@ local function makeESP(plr)
         bbg.StudsOffset = Vector3.new(0,3,0)
         bbg.AlwaysOnTop = true
         bbg.Parent = char
-        local tl = Instance.new("TextLabel", bbg)
+        local tl = Instance.new("TextLabel",bbg)
         tl.Size = UDim2.new(1,0,1,0)
         tl.BackgroundTransparency = 1
         tl.TextColor3 = Color3.new(1,1,1)
@@ -438,9 +481,8 @@ RunService.Stepped:Connect(function()
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
 
-    if hum and not getgenv().Cfg.fly then
+    if hum and not flying then
         hum.WalkSpeed = getgenv().Cfg.ws
         hum.JumpPower = getgenv().Cfg.jp
         hum.UseJumpPower = true
@@ -448,7 +490,7 @@ RunService.Stepped:Connect(function()
 
     workspace.CurrentCamera.FieldOfView = getgenv().Cfg.fov
 
-    if getgenv().Cfg.noclip then
+    if getgenv().Cfg.noclip and char then
         for _,p in ipairs(char:GetDescendants()) do
             if p:IsA("BasePart") then p.CanCollide = false end
         end
@@ -456,75 +498,31 @@ RunService.Stepped:Connect(function()
 end)
 
 RunService.Heartbeat:Connect(function()
-    local char = lp.Character
-    if not char then return end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hrp then return end
-
     if getgenv().Cfg.fps then
         if setfpscap then setfpscap(120) end
     else
         if setfpscap then setfpscap(60) end
     end
 
-    if getgenv().Cfg.fly then
-        if not flying then startFly() end
-        if flyLV and flyAV then
-            local cam = workspace.CurrentCamera
-            local dir = Vector3.new(0,0,0)
-
-            if hum and hum.MoveDirection.Magnitude > 0 then
-                dir = dir + hum.MoveDirection
-            end
-
-            if UIS:IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
-
-            if flyUp then
-                dir = dir + Vector3.new(0,1,0)
-            end
-
-            if dir.Magnitude > 0 then
-                dir = dir.Unit * getgenv().Cfg.flyspeed
-            end
-
-            flyLV.VectorVelocity = dir
-            flyAV.CFrame = cam.CFrame
-        end
-    else
-        if flying then stopFly() end
+    if getgenv().Cfg.fly and not flying then
+        sFly()
+    elseif not getgenv().Cfg.fly and flying then
+        eFly()
     end
 
-    if getgenv().Cfg.antivoid and hrp then
-        if hrp.Position.Y < -50 then
-            hrp.CFrame = CFrame.new(hrp.Position.X, 100, hrp.Position.Z)
-        end
+    if getgenv().Cfg.fling and not flingActive then
+        sFling()
+    elseif not getgenv().Cfg.fling and flingActive then
+        eFling()
     end
 
-    if getgenv().Cfg.fling and hrp then
-        hrp.CanCollide = false
-        local myPos = hrp.Position
-        for _,plr in ipairs(Players:GetPlayers()) do
-            if plr ~= lp and plr.Character then
-                local tRoot = plr.Character:FindFirstChild("HumanoidRootPart")
-                if tRoot then
-                    local dist = (myPos - tRoot.Position).Magnitude
-                    if dist < 8 then
-                        hrp.CFrame = tRoot.CFrame
-                        hrp.Velocity = Vector3.new(0,0,0)
-                        hrp.RotVelocity = Vector3.new(0,0,0)
-                        if hum then
-                            hum.WalkSpeed = 200
-                        end
-                        hrp.CFrame = tRoot.CFrame * CFrame.new(0,0,-1)
-                        hrp.Velocity = (tRoot.Position - myPos).Unit * 300
-                        tRoot.Velocity = (tRoot.Position - myPos).Unit * 9999 + Vector3.new(0,4000,0)
-                        tRoot.RotVelocity = Vector3.new(math.random(-9999,9999),math.random(-9999,9999),math.random(-9999,9999))
-                    end
-                end
+    local char = lp.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp and getgenv().Cfg.antivoid then
+            if hrp.Position.Y < -50 then
+                hrp.CFrame = CFrame.new(hrp.Position.X,100,hrp.Position.Z)
+                hrp.Velocity = Vector3.new(0,0,0)
             end
         end
     end
@@ -536,10 +534,10 @@ RunService.Heartbeat:Connect(function()
             if obj:IsA("BasePart") then
                 local skip = false
                 for _,pl in ipairs(Players:GetPlayers()) do
-                    if pl.Character and obj:IsDescendantOf(pl.Character) then skip = true break end
+                    if pl.Character and obj:IsDescendantOf(pl.Character) then skip=true break end
                 end
                 if not skip and obj.Transparency < 0.75 then
-                    table.insert(xrayData, {obj, obj.Transparency})
+                    table.insert(xrayData,{obj,obj.Transparency})
                     obj.Transparency = 0.75
                 end
             end
@@ -555,8 +553,7 @@ end)
 
 lp.CharacterAdded:Connect(function()
     flying = false
-    flyAtt = nil
-    flyLV = nil
-    flyAV = nil
-    flyUp = false
+    flyBody = {}
+    flingActive = false
+    if flingLoop then flingLoop:Disconnect() flingLoop = nil end
 end)
