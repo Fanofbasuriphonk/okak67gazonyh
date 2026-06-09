@@ -1,0 +1,186 @@
+local p = game:GetService("Players")
+local r = game:GetService("RunService")
+local u = game:GetService("UserInputService")
+local lp = p.LocalPlayer
+local c = workspace.CurrentCamera
+
+getgenv().S = getgenv().S or {
+    WS = 16,
+    JP = 50,
+    FOV = 70,
+    E = true,
+    H = true
+}
+
+local sg = Instance.new("ScreenGui")
+sg.Name = "D"
+sg.ResetOnSpawn = false
+sg.Parent = game:GetService("CoreGui")
+
+local b = Instance.new("TextButton")
+b.Size = UDim2.new(0, 50, 0, 50)
+b.Position = UDim2.new(0, 10, 0.5, 0)
+b.BackgroundColor3 = Color3.fromRGB(100, 0, 255)
+b.Text = "D"
+b.TextColor3 = Color3.new(1, 1, 1)
+b.Parent = sg
+Instance.new("UICorner", b).CornerRadius = UDim.new(1, 0)
+
+local m = Instance.new("Frame")
+m.Size = UDim2.new(0, 300, 0, 400)
+m.Position = UDim2.new(0.5, -150, 0.5, -200)
+m.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+m.Visible = false
+m.Parent = sg
+Instance.new("UICorner", m)
+
+local t = Instance.new("TextLabel")
+t.Size = UDim2.new(1, 0, 0, 40)
+t.Text = "DELTA PRO"
+t.TextColor3 = Color3.new(1, 1, 1)
+t.BackgroundTransparency = 1
+t.Parent = m
+
+local sc = Instance.new("ScrollingFrame")
+sc.Size = UDim2.new(1, -20, 1, -50)
+sc.Position = UDim2.new(0, 10, 0, 45)
+sc.BackgroundTransparency = 1
+sc.CanvasSize = UDim2.new(0, 0, 2, 0)
+sc.Parent = m
+Instance.new("UIListLayout", sc).Padding = UDim.new(0, 10)
+
+local function s(n, mi, ma, st, k)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(1, 0, 0, 50)
+    f.BackgroundTransparency = 1
+    f.Parent = sc
+    
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(1, 0, 0, 20)
+    l.Text = n .. ": " .. getgenv().S[k]
+    l.TextColor3 = Color3.new(1, 1, 1)
+    l.BackgroundTransparency = 1
+    l.Parent = f
+    
+    local i = Instance.new("TextBox")
+    i.Size = UDim2.new(1, 0, 0, 25)
+    i.Position = UDim2.new(0, 0, 0, 20)
+    i.Text = tostring(getgenv().S[k])
+    i.Parent = f
+    
+    i.FocusLost:Connect(function()
+        local v = tonumber(i.Text)
+        if v then
+            v = math.clamp(v, mi, ma)
+            getgenv().S[k] = v
+            l.Text = n .. ": " .. v
+        end
+    end)
+end
+
+local function bt(n, k)
+    local tb = Instance.new("TextButton")
+    tb.Size = UDim2.new(1, 0, 0, 40)
+    tb.Text = n .. ": " .. tostring(getgenv().S[k])
+    tb.Parent = sc
+    tb.MouseButton1Click:Connect(function()
+        getgenv().S[k] = not getgenv().S[k]
+        tb.Text = n .. ": " .. tostring(getgenv().S[k])
+    end)
+end
+
+s("WalkSpeed", 16, 500, 16, "WS")
+s("JumpPower", 50, 500, 50, "JP")
+s("FOV", 70, 200, 70, "FOV")
+bt("ESP", "E")
+bt("Highlights", "H")
+
+local function d(obj)
+    local g = false
+    local s, p
+    obj.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            g = true
+            s = input.Position
+            p = obj.Position
+        end
+    end)
+    u.InputChanged:Connect(function(input)
+        if g and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - s
+            obj.Position = UDim2.new(p.X.Scale, p.X.Offset + delta.X, p.Y.Scale, p.Y.Offset + delta.Y)
+        end
+    end)
+    u.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            g = false
+        end
+    end)
+end
+
+d(m)
+d(b)
+
+b.MouseButton1Click:Connect(function()
+    m.Visible = not m.Visible
+    b.Visible = not m.Visible
+end)
+
+local cl = Instance.new("TextButton")
+cl.Size = UDim2.new(0, 30, 0, 30)
+cl.Position = UDim2.new(1, -35, 0, 5)
+cl.Text = "X"
+cl.Parent = m
+cl.MouseButton1Click:Connect(function()
+    m.Visible = false
+    b.Visible = true
+end)
+
+local function e(plr)
+    local function create()
+        if plr == lp then return end
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        
+        local h = Instance.new("Highlight")
+        h.Parent = char
+        
+        local bg = Instance.new("BillboardGui")
+        bg.Size = UDim2.new(0, 200, 0, 50)
+        bg.Adornee = hrp
+        bg.AlwaysOnTop = true
+        bg.StudsOffset = Vector3.new(0, 3, 0)
+        bg.Parent = char
+        
+        local tl = Instance.new("TextLabel")
+        tl.Size = UDim2.new(1, 0, 1, 0)
+        tl.BackgroundTransparency = 1
+        tl.TextColor3 = Color3.new(1, 1, 1)
+        tl.Parent = bg
+        
+        r.RenderStepped:Connect(function()
+            if char and char:Parent and hrp and hrp.Parent then
+                h.Enabled = getgenv().S.E and getgenv().S.H
+                tl.Visible = getgenv().S.E
+                local dist = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and math.floor((hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude) or 0
+                tl.Text = plr.Name .. " [" .. dist .. "]"
+            else
+                h:Destroy()
+                bg:Destroy()
+            end
+        end)
+    end
+    create()
+    plr.CharacterAdded:Connect(create)
+end
+
+for _, v in pairs(p:GetPlayers()) do e(v) end
+p.PlayerAdded:Connect(e)
+
+r.Heartbeat:Connect(function()
+    if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+        lp.Character.Humanoid.WalkSpeed = getgenv().S.WS
+        lp.Character.Humanoid.JumpPower = getgenv().S.JP
+    end
+    c.FieldOfView = getgenv().S.FOV
+end)
