@@ -306,34 +306,26 @@ end)
 local flying = false
 local flyBG = nil
 local flyBV = nil
-
 local wantUp = false
 local wantDown = false
+local smoothVel = Vector3.new(0,0,0)
 
 UIS.JumpRequest:Connect(function()
     if getgenv().Cfg.fly and flying then
         wantUp = true
-        task.delay(0.15,function() wantUp = false end)
+        task.delay(0.2,function() wantUp = false end)
     end
 end)
 
 UIS.InputBegan:Connect(function(input,gpe)
     if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Space then
-        wantUp = true
-    end
-    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.LeftControl then
-        wantDown = true
-    end
+    if input.KeyCode == Enum.KeyCode.Space then wantUp = true end
+    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.LeftControl then wantDown = true end
 end)
 
 UIS.InputEnded:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.Space then
-        wantUp = false
-    end
-    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.LeftControl then
-        wantDown = false
-    end
+    if input.KeyCode == Enum.KeyCode.Space then wantUp = false end
+    if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.LeftControl then wantDown = false end
 end)
 
 local function startFly()
@@ -345,12 +337,13 @@ local function startFly()
     if not hrp or not hum then return end
     flying = true
     hum.PlatformStand = true
+    smoothVel = Vector3.new(0,0,0)
 
     flyBG = Instance.new("BodyGyro")
     flyBG.P = 9e4
     flyBG.D = 600
     flyBG.MaxTorque = Vector3.new(9e9,9e9,9e9)
-    flyBG.CFrame = hrp.CFrame
+    flyBG.CFrame = workspace.CurrentCamera.CFrame
     flyBG.Parent = hrp
 
     flyBV = Instance.new("BodyVelocity")
@@ -363,6 +356,7 @@ end
 local function stopFly()
     if not flying then return end
     flying = false
+    smoothVel = Vector3.new(0,0,0)
     if flyBG then flyBG:Destroy() flyBG = nil end
     if flyBV then flyBV:Destroy() flyBV = nil end
     local char = lp.Character
@@ -370,9 +364,7 @@ local function stopFly()
         local hum = char:FindFirstChildOfClass("Humanoid")
         if hum then hum.PlatformStand = false end
         local hrp = char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            hrp.Velocity = Vector3.new(0,0,0)
-        end
+        if hrp then hrp.Velocity = Vector3.new(0,0,0) end
     end
 end
 
@@ -380,21 +372,39 @@ local flingConn = nil
 
 local function startFling()
     if flingConn then return end
-    flingConn = RunService.Heartbeat:Connect(function()
+    flingConn = RunService.Stepped:Connect(function()
         if not getgenv().Cfg.fling then return end
         local char = lp.Character
         if not char then return end
         local hrp = char:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum then return end
+
+        local savePos = hrp.CFrame
+        local saveVel = hrp.Velocity
+
         for _,plr in ipairs(Players:GetPlayers()) do
             if plr ~= lp and plr.Character then
                 local tHrp = plr.Character:FindFirstChild("HumanoidRootPart")
-                if tHrp and (hrp.Position - tHrp.Position).Magnitude < 8 then
-                    tHrp.Velocity = (tHrp.Position - hrp.Position).Unit * 9999 + Vector3.new(0,3000,0)
-                    tHrp.RotVelocity = Vector3.new(math.random(-9999,9999),math.random(-9999,9999),math.random(-9999,9999))
+                if tHrp then
+                    local dist = (hrp.Position - tHrp.Position).Magnitude
+                    if dist < 10 then
+                        local dir = (tHrp.Position - hrp.Position)
+                        if dir.Magnitude > 0 then dir = dir.Unit end
+                        tHrp.Velocity = dir * 9999 + Vector3.new(0,4000,0)
+                        tHrp.RotVelocity = Vector3.new(
+                            math.random(-9999,9999),
+                            math.random(-9999,9999),
+                            math.random(-9999,9999)
+                        )
+                    end
                 end
             end
         end
+
+        hrp.CFrame = savePos
+        hrp.Velocity = saveVel
+        hrp.RotVelocity = Vector3.new(0,0,0)
     end)
 end
 
@@ -478,6 +488,43 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+RunService.RenderStepped:Connect(function()
+    if getgenv().Cfg.fly and flying and flyBV and flyBG then
+        local char = lp.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp then return end
+
+        local cam = workspace.CurrentCamera
+        local speed = getgenv().Cfg.flyspeed
+        local dir = Vector3.new(0,0,0)
+        local camLook = cam.CFrame.LookVector
+        local camRight = cam.CFrame.RightVector
+
+        if hum and hum.MoveDirection.Magnitude > 0 then
+            local md = hum.MoveDirection
+            dir = (camLook * Vector3.new(1,0,1)).Unit * md.Z + (camRight * Vector3.new(1,0,1)).Unit * md.X
+        end
+
+        if UIS:IsKeyDown(Enum.KeyCode.W) then dir = dir + camLook end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then dir = dir - camLook end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then dir = dir - camRight end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then dir = dir + camRight end
+        if wantUp then dir = dir + Vector3.new(0,1,0) end
+        if wantDown then dir = dir - Vector3.new(0,1,0) end
+
+        local target = Vector3.new(0,0,0)
+        if dir.Magnitude > 0 then
+            target = dir.Unit * speed
+        end
+
+        smoothVel = smoothVel:Lerp(target, 0.15)
+        flyBV.Velocity = smoothVel
+        flyBG.CFrame = cam.CFrame
+    end
+end)
+
 RunService.Heartbeat:Connect(function()
     if getgenv().Cfg.fps then
         if setfpscap then setfpscap(120) end
@@ -487,39 +534,6 @@ RunService.Heartbeat:Connect(function()
 
     if getgenv().Cfg.fly then
         if not flying then startFly() end
-        if flying and flyBV and flyBG then
-            local char = lp.Character
-            if not char then return end
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if not hrp then return end
-            local cam = workspace.CurrentCamera
-            local speed = getgenv().Cfg.flyspeed
-            local dir = Vector3.new(0,0,0)
-
-            if hum and hum.MoveDirection.Magnitude > 0 then
-                local md = hum.MoveDirection
-                dir = dir + cam.CFrame.LookVector * md.Z + cam.CFrame.RightVector * md.X
-                if dir.Magnitude < 0.01 then
-                    dir = dir + cam.CFrame.LookVector * (md.Magnitude)
-                end
-            end
-
-            if UIS:IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
-
-            if wantUp then dir = dir + Vector3.new(0,1,0) end
-            if wantDown then dir = dir - Vector3.new(0,1,0) end
-
-            if dir.Magnitude > 0 then
-                dir = dir.Unit * speed
-            end
-
-            flyBV.Velocity = flyBV.Velocity:Lerp(dir, 0.25)
-            flyBG.CFrame = flyBG.CFrame:Lerp(cam.CFrame, 0.15)
-        end
     else
         if flying then stopFly() end
     end
@@ -571,5 +585,6 @@ lp.CharacterAdded:Connect(function()
     flyBV = nil
     wantUp = false
     wantDown = false
+    smoothVel = Vector3.new(0,0,0)
     if flingConn then flingConn:Disconnect() flingConn = nil end
 end)
