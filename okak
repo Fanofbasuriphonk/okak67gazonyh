@@ -1,131 +1,151 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
 getgenv().Config = getgenv().Config or {
     WS = 16,
     JP = 50,
     FOV = 70,
     ESP = true,
-    High = true
+    High = true,
+    FPS = false,
+    NoClip = false,
+    Xray = false
 }
 
 local sg = Instance.new("ScreenGui")
 sg.Name = "DeltaUI"
 sg.ResetOnSpawn = false
-sg.Parent = CoreGui
+sg.Parent = game:GetService("CoreGui")
 
 local mini = Instance.new("TextButton")
-mini.Size = UDim2.new(0, 50, 0, 50)
-mini.Position = UDim2.new(0, 50, 0, 50)
-mini.BackgroundColor3 = Color3.fromRGB(120, 0, 255)
-mini.Text = "D"
+mini.Size = UDim2.new(0, 55, 0, 55)
+mini.Position = UDim2.new(0, 30, 0.4, 0)
+mini.BackgroundColor3 = Color3.fromRGB(110, 0, 255)
+mini.Text = "Δ"
 mini.TextColor3 = Color3.new(1, 1, 1)
-mini.TextSize = 25
+mini.TextSize = 32
+mini.Font = Enum.Font.GothamBold
 mini.Parent = sg
 Instance.new("UICorner", mini).CornerRadius = UDim.new(1, 0)
+Instance.new("UIStroke", mini).Thickness = 2
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 280, 0, 380)
-main.Position = UDim2.new(0.5, -140, 0.5, -190)
-main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.Size = UDim2.new(0, 290, 0, 460)
+main.Position = UDim2.new(0.5, -145, 0.5, -230)
+main.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
 main.Visible = false
 main.Parent = sg
-Instance.new("UICorner", main)
-Instance.new("UIStroke", main).Color = Color3.fromRGB(120, 0, 255)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+Instance.new("UIStroke", main).Color = Color3.fromRGB(130, 0, 255)
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
+title.Size = UDim2.new(1, 0, 0, 45)
 title.Text = "DELTA UNIVERSAL"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
 title.Parent = main
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -20, 1, -60)
-scroll.Position = UDim2.new(0, 10, 0, 50)
+scroll.Size = UDim2.new(1, -20, 1, -65)
+scroll.Position = UDim2.new(0, 10, 0, 55)
 scroll.BackgroundTransparency = 1
-scroll.CanvasSize = UDim2.new(0, 0, 1.2, 0)
-scroll.ScrollBarThickness = 2
+scroll.ScrollBarThickness = 4
+scroll.ScrollBarImageColor3 = Color3.fromRGB(130, 0, 255)
+scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 scroll.Parent = main
-Instance.new("UIListLayout", scroll).Padding = UDim.new(0, 10)
+Instance.new("UIListLayout", scroll).Padding = UDim.new(0, 8)
 
-local function make_input(name, key, min, max)
+local function input(name, key, minv, maxv)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, 0, 0, 60)
-    f.BackgroundTransparency = 1
+    f.Size = UDim2.new(1, 0, 0, 65)
+    f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     f.Parent = scroll
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
     
     local l = Instance.new("TextLabel")
     l.Size = UDim2.new(1, 0, 0, 25)
     l.Text = name .. ": " .. getgenv().Config[key]
     l.TextColor3 = Color3.new(1, 1, 1)
     l.BackgroundTransparency = 1
+    l.Font = Enum.Font.GothamSemibold
     l.Parent = f
     
-    local i = Instance.new("TextBox")
-    i.Size = UDim2.new(1, -20, 0, 30)
-    i.Position = UDim2.new(0, 10, 0, 25)
-    i.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    i.Text = tostring(getgenv().Config[key])
-    i.TextColor3 = Color3.new(1, 1, 1)
-    i.Parent = f
-    Instance.new("UICorner", i)
+    local box = Instance.new("TextBox")
+    box.Size = UDim2.new(1, -20, 0, 30)
+    box.Position = UDim2.new(0, 10, 0, 28)
+    box.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    box.Text = tostring(getgenv().Config[key])
+    box.TextColor3 = Color3.new(1, 1, 1)
+    box.Parent = f
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
     
-    i.FocusLost:Connect(function()
-        local v = tonumber(i.Text)
-        if v then
-            v = math.clamp(v, min, max)
-            getgenv().Config[key] = v
-            l.Text = name .. ": " .. v
+    box.FocusLost:Connect(function()
+        local num = tonumber(box.Text)
+        if num then
+            num = math.clamp(num, minv, maxv)
+            getgenv().Config[key] = num
+            l.Text = name .. ": " .. num
         end
     end)
 end
 
-local function make_toggle(name, key)
-    local t = Instance.new("TextButton")
-    t.Size = UDim2.new(1, 0, 0, 40)
-    t.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    t.Text = name .. ": " .. tostring(getgenv().Config[key])
-    t.TextColor3 = Color3.new(1, 1, 1)
-    t.Parent = scroll
-    Instance.new("UICorner", t)
+local function toggle(name, key)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, 0, 0, 45)
+    b.BackgroundColor3 = getgenv().Config[key] and Color3.fromRGB(0, 170, 80) or Color3.fromRGB(45, 45, 45)
+    b.Text = name .. ": " .. (getgenv().Config[key] and "ON" or "OFF")
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Font = Enum.Font.GothamBold
+    b.Parent = scroll
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
     
-    t.MouseButton1Click:Connect(function()
+    b.MouseButton1Click:Connect(function()
         getgenv().Config[key] = not getgenv().Config[key]
-        t.Text = name .. ": " .. tostring(getgenv().Config[key])
+        b.BackgroundColor3 = getgenv().Config[key] and Color3.fromRGB(0, 170, 80) or Color3.fromRGB(45, 45, 45)
+        b.Text = name .. ": " .. (getgenv().Config[key] and "ON" or "OFF")
     end)
 end
 
-make_input("WalkSpeed", "WS", 16, 500)
-make_input("JumpPower", "JP", 50, 500)
-make_input("FOV", "FOV", 70, 200)
-make_toggle("ESP Names/Dist", "ESP")
-make_toggle("ESP Highlights", "High")
+input("WalkSpeed", "WS", 16, 500)
+input("JumpPower", "JP", 50, 500)
+input("FOV", "FOV", 70, 200)
+toggle("ESP Names + Distance", "ESP")
+toggle("Highlights", "High")
+toggle("FPS Unlocker (120)", "FPS")
+toggle("NoClip", "NoClip")
+toggle("Xray", "Xray")
 
-local function drag(obj)
-    local active = false
-    local start, pos
-    obj.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-            active = true
-            start = i.Position
-            pos = obj.Position
+local function drag(frame)
+    local dragging = false
+    local dragInput
+    local dragStart
+    local startPos
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
         end
     end)
-    UserInputService.InputChanged:Connect(function(i)
-        if active and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
-            local delta = i.Position - start
-            obj.Position = UDim2.new(pos.X.Scale, pos.X.Offset + delta.X, pos.Y.Scale, pos.Y.Offset + delta.Y)
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
         end
     end)
-    UserInputService.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-            active = false
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
 end
+
 drag(main)
 drag(mini)
 
@@ -134,66 +154,111 @@ mini.MouseButton1Click:Connect(function()
     mini.Visible = false
 end)
 
-local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 30, 0, 30)
-close.Position = UDim2.new(1, -35, 0, 5)
-close.Text = "X"
-close.TextColor3 = Color3.new(1, 0, 0)
-close.BackgroundTransparency = 1
-close.Parent = main
-close.MouseButton1Click:Connect(function()
+local closebtn = Instance.new("TextButton")
+closebtn.Size = UDim2.new(0, 30, 0, 30)
+closebtn.Position = UDim2.new(1, -35, 0, 8)
+closebtn.Text = "×"
+closebtn.TextColor3 = Color3.fromRGB(255, 70, 70)
+closebtn.BackgroundTransparency = 1
+closebtn.TextSize = 28
+closebtn.Parent = main
+closebtn.MouseButton1Click:Connect(function()
     main.Visible = false
     mini.Visible = true
 end)
 
-local function setup_esp(plr)
-    if plr == Players.LocalPlayer then return end
+-- FPS Unlocker
+RunService.Heartbeat:Connect(function()
+    if getgenv().Config.FPS then
+        setfpscap(120)
+    else
+        setfpscap(0)
+    end
+end)
+
+-- NoClip
+local noclipcon
+noclipcon = RunService.Stepped:Connect(function()
+    if getgenv().Config.NoClip and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Xray
+local xraycon
+local xrayparts = {}
+xraycon = RunService.Heartbeat:Connect(function()
+    if getgenv().Config.Xray then
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                for _, obj in pairs(plr.Character:GetDescendants()) do
+                    if obj:IsA("BasePart") and obj.Transparency < 0.7 then
+                        obj.Transparency = 0.7
+                        table.insert(xrayparts, obj)
+                    end
+                end
+            end
+        end
+    else
+        for _, part in pairs(xrayparts) do
+            if part and part.Parent then
+                part.Transparency = 0
+            end
+        end
+        xrayparts = {}
+    end
+end)
+
+-- ESP
+local esp = {}
+local function addesp(plr)
+    if plr == LocalPlayer then return end
     local function create()
         local char = plr.Character or plr.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart", 10)
-        if not hrp then return end
+        local root = char:WaitForChild("HumanoidRootPart")
+        local highlight = Instance.new("Highlight", char)
+        highlight.FillColor = Color3.fromRGB(0, 170, 255)
+        highlight.FillTransparency = 0.75
         
-        local h = Instance.new("Highlight", char)
-        local bg = Instance.new("BillboardGui", char)
-        bg.Size = UDim2.new(0, 200, 0, 50)
-        bg.Adornee = hrp
-        bg.AlwaysOnTop = true
-        bg.StudsOffset = Vector3.new(0, 3, 0)
+        local bill = Instance.new("BillboardGui", char)
+        bill.Adornee = root
+        bill.Size = UDim2.new(0, 200, 0, 60)
+        bill.AlwaysOnTop = true
+        bill.StudsOffset = Vector3.new(0, 3.5, 0)
         
-        local l = Instance.new("TextLabel", bg)
-        l.Size = UDim2.new(1, 0, 1, 0)
-        l.BackgroundTransparency = 1
-        l.TextColor3 = Color3.new(1, 1, 1)
-        l.TextStrokeTransparency = 0
-        l.Font = Enum.Font.GothamBold
-        l.TextSize = 13
-
-        local conn
-        conn = RunService.RenderStepped:Connect(function()
-            if not char or not char.Parent or not hrp or not hrp.Parent then
-                conn:Disconnect()
-                return
-            end
-            h.Enabled = getgenv().Config.High
-            l.Visible = getgenv().Config.ESP
-            local d = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") 
-                and math.floor((hrp.Position - Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude) or 0
-            l.Text = plr.Name .. " | " .. d .. "s"
+        local text = Instance.new("TextLabel", bill)
+        text.Size = UDim2.new(1, 0, 1, 0)
+        text.BackgroundTransparency = 1
+        text.TextColor3 = Color3.new(1, 1, 1)
+        text.TextStrokeTransparency = 0
+        text.Font = Enum.Font.GothamBold
+        text.TextSize = 13
+        
+        RunService.RenderStepped:Connect(function()
+            if not char or not char.Parent then return end
+            highlight.Enabled = getgenv().Config.High
+            text.Visible = getgenv().Config.ESP
+            local dist = (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")) and math.floor((LocalPlayer.Character.HumanoidRootPart.Position - root.Position).Magnitude) or 0
+            text.Text = plr.Name .. "\n[" .. dist .. "s]"
         end)
     end
     create()
     plr.CharacterAdded:Connect(create)
 end
 
-for _, p in pairs(Players:GetPlayers()) do setup_esp(p) end
-Players.PlayerAdded:Connect(setup_esp)
+for _, p in pairs(Players:GetPlayers()) do addesp(p) end
+Players.PlayerAdded:Connect(addesp)
 
+-- Movement
 RunService.Heartbeat:Connect(function()
-    local char = Players.LocalPlayer.Character
+    local char = LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
         char.Humanoid.WalkSpeed = getgenv().Config.WS
         char.Humanoid.JumpPower = getgenv().Config.JP
-        char.Humanoid.UseJumpPower = true
     end
-    workspace.CurrentCamera.FieldOfView = getgenv().Config.FOV
+    Camera.FieldOfView = getgenv().Config.FOV
 end)
